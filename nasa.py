@@ -278,16 +278,22 @@ def process_file(file_path):
             yield process_record(data[2:])
             frame = dat.read(FRAME)
 
+def summary(records):
+    for rtype, record in records.items():
+        print(f'{len(record)}: {rtype.name}')
 
 @click.command()
 @click.argument('data')
-@click.option('--count')
-def cli(data, count=10):
-    records = defaultdict(list)
+@click.option('-q', '--quiet', 'quiet', is_flag=True, help="Don't show record summary")
+def cli(data, quiet=False):
+    """
+    Read in NASA Nimbus 4 IRIS data and output to readable format
+    """
+    all_records = defaultdict(list)
     for r_type, record in process_file(data):
-        records[r_type.name].append(record)
-    for r_type, records in records.items():
-        print(r_type, len(records))
+        all_records[r_type].append(record)
+    if not quiet:
+        summary(all_records)
 if __name__ == "__main__":
     cli()
 

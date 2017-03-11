@@ -4,6 +4,18 @@
 import click
 from collections import namedtuple
 from collections import defaultdict
+import enum
+
+class RecordType(enum.Enum):
+    SUMMARY = 1
+    COLD_REFERENCE = 2
+    WARM_REFERENCE = 3
+    AVERAGE_RESPONSIVITY = 4
+    NOISE_EQUIVALENT_RADIANCE = 5
+    AVERAGE_INSTRUMENT_TEMP = 6
+    SD_INSTRUMENT_TEMP = 7
+    CALIBRATED_ATMOSPHERIC_SPECTRUM = 8
+
 
 Summary = namedtuple('Summary', (
     'satellite_id '
@@ -223,7 +235,14 @@ def make_cas(r):
             )
     return record
 
-RECORD_TYPES = {1:make_summary, 2: make_cold, 3: make_warm, 4: make_responsivity, 5: make_ner, 6: make_ait, 7: make_sd_of_it, 8: make_cas}
+RECORD_TYPES = {RecordType.SUMMARY: make_summary,
+        RecordType.COLD_REFERENCE: make_cold,
+        RecordType.WARM_REFERENCE: make_warm,
+        RecordType.AVERAGE_RESPONSIVITY: make_responsivity,
+        RecordType.NOISE_EQUIVALENT_RADIANCE: make_ner,
+        RecordType.AVERAGE_INSTRUMENT_TEMP: make_ait,
+        RecordType.SD_INSTRUMENT_TEMP: make_sd_of_it,
+        RecordType.CALIBRATED_ATMOSPHERIC_SPECTRUM: make_cas}
 FRAME = 3572
 
 def ibm360(dat):
@@ -243,7 +262,7 @@ def o_range(dat):
 def process_record(raw):
     if len(raw) != 891:
         raise ValueError(f'Invalid record length {len(raw)}')
-    record_type = int_(raw[0])
+    record_type = RecordType(int_(raw[0]))
     record = RECORD_TYPES[record_type](raw)
 
     return record_type, record
@@ -266,9 +285,9 @@ def process_file(file_path):
 def cli(data, count=10):
     records = defaultdict(list)
     for r_type, record in process_file(data):
-        records[r_type].append(record)
-    for rtype, records in records.items():
-        print(records[0].__class__.__name__, len(records))
+        records[r_type.name].append(record)
+    for r_type, records in records.items():
+        print(r_type, len(records))
 if __name__ == "__main__":
     cli()
 

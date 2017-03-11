@@ -287,8 +287,8 @@ def summary(records):
         print(f'{len(record)}: {rtype.name}')
 
 @click.command()
-@click.argument('data')
-@click.option('--json', 'json_out', help='Write records to file in JSON format')
+@click.argument('data', type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--json', 'json_out', help='Write records to file in JSON format', type=click.Path())
 @click.option('-q', '--quiet', 'quiet', is_flag=True, help="Don't show record summary")
 def cli(data, json_out=None, quiet=False):
     """

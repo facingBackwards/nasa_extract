@@ -274,8 +274,6 @@ def process_file(file_path):
         # click.echo(len(frame))
         while frame:
             data = [frame[i:i+4] for i in range(0,  893*4, 4)]
-            # click.echo(data[:10])
-            # click.echo(len(data))
             yield process_record(data[2:])
             frame = dat.read(FRAME)
 

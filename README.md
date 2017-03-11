@@ -1,5 +1,5 @@
 # nasa_extract
-Tool for extracting NASA data from binary archives
+Tool for extracting NASA data from binary archives as found [here](https://disc.gsfc.nasa.gov/). Currently only supports Nimbus4 IRIS data.
 
 ### Usage:
     $ ./nasa.py --help

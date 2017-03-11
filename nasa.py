@@ -135,7 +135,7 @@ def make_summary(r):
 
 def make_cold(r):
     r.insert(0, [])
-    start, end = orbit_times(r[2])
+    start, end = o_range(r[2])
     record = ColdReference(
             start_orbit=start,
             end_orbit=end,

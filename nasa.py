@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import click
+import json
 from collections import namedtuple
 from collections import defaultdict
 import enum
@@ -278,14 +279,20 @@ def process_file(file_path):
             yield process_record(data[2:])
             frame = dat.read(FRAME)
 
+def dump_json(records, filepath):
+    all_records = {key.name: [v._asdict() for v in value] for key, value in records.items()}
+    with open(filepath, 'w') as out:
+        json.dump(all_records, out, indent=None, separators=(',', ':'))
+
 def summary(records):
     for rtype, record in records.items():
         print(f'{len(record)}: {rtype.name}')
 
 @click.command()
 @click.argument('data')
+@click.option('--json', 'json_out', help='Write records to file in JSON format')
 @click.option('-q', '--quiet', 'quiet', is_flag=True, help="Don't show record summary")
-def cli(data, quiet=False):
+def cli(data, json_out=None, quiet=False):
     """
     Read in NASA Nimbus 4 IRIS data and output to readable format
     """
@@ -294,6 +301,8 @@ def cli(data, quiet=False):
         all_records[r_type].append(record)
     if not quiet:
         summary(all_records)
+    if json_out:
+        dump_json(all_records, json_out)
 if __name__ == "__main__":
     cli()
 
